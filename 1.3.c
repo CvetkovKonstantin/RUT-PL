@@ -9,7 +9,7 @@ int main()
 	scanf("%lf", &I);
 	printf("Введите количество теплоты Q (кДж): ");
 	scanf("%lf", &Q_kJ);
-	printf("Время нагрева проволки: %.2f секунд\n", findt(R, I, Q_kJ));
+	printf("Время нагрева проволки: %.2f секунд\n", findt(Q_kJ, I, R));
 	return 0;
 }
 double findt(const double Q_kJ, const double I, const double R)
