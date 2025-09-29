@@ -1,5 +1,16 @@
 #include<stdio.h>
+/**
+* @brief рассчитывает время нагрева проволки
+* @param Q_kJ количество теплоты в кДж
+* @param I сила тока в амперах
+* @param R сопротивление проволки в омах
+* @return возвращает рассчитанное значение
+*/
 double findt(const double Q_kJ, const double I, const double R);
+/**
+* @brief точка входа в программу
+* @return возвращает 0 если программа выполненна корректно
+*/
 int main()
 {
 	double R, I, Q_kJ;
