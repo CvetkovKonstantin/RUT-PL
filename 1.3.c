@@ -13,9 +13,9 @@ double findt(const double Q_kJ, const double I, const double R);
 */
 int main()
 {
-	double R;
-	double I;
-	double Q_kJ;
+	double R=0;
+	double I=0;
+	double Q_kJ=0;
 	printf("Введите сопротивление R (Oм): ");
 	scanf("%lf", &R);
 	printf("Введите силу тока I (A): ");
