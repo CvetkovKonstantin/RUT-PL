@@ -53,7 +53,7 @@ int main()
     int n = getValue();
     checkNonNegative(n);
     printf("Сумма %d чисел последовательности равна %.4lf\n", n, getSumN(n));
-    
+
     printf("Введите e: ");
     double e = getDouble();
     checkPositive(e);
@@ -110,10 +110,10 @@ double getRecurent(const int i)
 double getSumN(const int n)
 {
     if (n == 0) return 0;
-    
+
     double current = -1.0;  
     double result = current;
-    
+
     for (int i = 1; i < n; i++)
     {
         current *= getRecurent(i);
@@ -133,8 +133,6 @@ double getSumE(const double e)
         result += current;
         current *= getRecurent(i);
         i++;
-        
-        if (i > 1000) break;
     }
     return result;
 }
