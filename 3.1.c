@@ -79,10 +79,16 @@ void checkStep(const double step)
 bool defineOOF(const double x)
 {
     double denominator = 3.0 + sin(3.6 * x);
-    return fabs(denominator) > DBL_EPSILON;
+    if (fabs(denominator) <= DBL_EPSILON) {
+        return false;
+    }
+    double under_sqrt = x - 1.0 / denominator;
+    return under_sqrt >= -DBL_EPSILON;
 }
 
 double getY(const double x)
 {
-    return x - 1.0 / (3.0 + sin(3.6 * x));
+    double denominator = 3.0 + sin(3.6 * x);
+    double under_sqrt = x - 1.0 / denominator; 
+    return sqrt(under_sqrt);
 }
