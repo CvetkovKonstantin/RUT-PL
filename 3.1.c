@@ -17,13 +17,6 @@ double getValue();
 void checkStep(const double step);
 
 /**
- * @brief проверяет, принадлежит ли значение аргумента функции её области определения
- * @param x - аргумент функции
- * @return true, если аргумент принадлежит ООФ, иначе false
- */
-bool defineOOF(const double x);
-
-/**
  * @brief рассчитывает значение функции y по заданной формуле
  * @param x значение аргумента
  * @return значение функции
@@ -32,23 +25,24 @@ double getY(const double x);
 
 int main()
 {
-    double start = 0.0;      
-    double end = 0.85;       
-    double step = 0.05; 
+    double start, end, step;
+    
+    printf("Введите начальное значение: ");
+    start = getValue();
+    
+    printf("Введите конечное значение: ");
+    end = getValue();
+    
+    printf("Введите шаг: ");
+    step = getValue();
+    checkStep(step);
     
     double x = start; 
 
     while (x < end + DBL_EPSILON)
     {
-        if (defineOOF(x))
-        {
-            double y = getY(x);
-            printf("%.2lf\t\t%.4lf\n", x, y);
-        }
-        else
-        {
-            printf("%.2lf\t\tне принадлежит ООФ\n", x);
-        }
+        double y = getY(x);
+        printf("%.2lf\t\t%.4lf\n", x, y);
         x += step;
     }
 
@@ -68,23 +62,11 @@ double getValue()
 
 void checkStep(const double step)
 {
-    if (step <= 0)
+    if (step <= DBL_EPSILON)
     {
         printf("Ошибка: шаг должен быть положительным!\n");
         abort();
     }
-}
-
-bool defineOOF(const double x)
-{
-    double denominator = 3.0 + sin(3.6 * x);
-
-    if (fabs(denominator) <= DBL_EPSILON)
-    {
-        return false;
-    }
-
-    return true;
 }
 
 double getY(const double x)
