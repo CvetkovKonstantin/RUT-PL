@@ -19,7 +19,7 @@ int areSidesPositive(const double a, const double b, const double c);
  * @param c третья сторона треугольника
  * @return 1 если могут быть сторонами треугольника, иначе 0
  */
-int MBT(const double a, const double b, const double c);
+int canFormTriangle(const double a, const double b, const double c);
 
 /**
  * @brief проверяет, является ли треугольник прямоугольным
@@ -56,7 +56,7 @@ int main(void)
         return 0;
     }
     
-    if (!MBT(a, b, c))
+    if (!canFormTriangle(a, b, c))
     {
         printf("Ошибка: эти числа не могут быть сторонами треугольника!\n");
         return 0;
@@ -88,35 +88,65 @@ int areSidesPositive(const double a, const double b, const double c)
     return (a > 0) && (b > 0) && (c > 0);
 }
 
-int MBT(const double a, const double b, const double c)
+int canFormTriangle(const double a, const double b, const double c)
 {
     return (a + b > c) && (a + c > b) && (b + c > a);
 }
 
 int findHypotenuse(const double a, const double b, const double c)
 {
-    if (fabs(a * a - (b * b + c * c)) < DBL_EPSILON)
+  
+    double max_side = a;
+    int max_index = 1;
+    
+    if (b > max_side)
     {
-        return 1; 
+        max_side = b;
+        max_index = 2;
     }
-    else if (fabs(b * b - (a * a + c * c)) < DBL_EPSILON)
+    if (c > max_side)
     {
-        return 2; 
-    }
-    else if (fabs(c * c - (a * a + b * b)) < DBL_EPSILON)
-    {
-        return 3; 
+        max_side = c;
+        max_index = 3;
     }
     
-    return 0; 
+
+    double sum_squares;
+    double max_square;
+    
+    switch (max_index)
+    {
+        case 1:
+            sum_squares = b * b + c * c;
+            max_square = a * a;
+            break;
+        case 2:
+            sum_squares = a * a + c * c;
+            max_square = b * b;
+            break;
+        case 3:
+            sum_squares = a * a + b * b;
+            max_square = c * c;
+            break;
+        default:
+            return 0;
+    }
+    
+ 
+    if (fabs(max_square - sum_squares) <= DBL_EPSILON * fmax(max_square, sum_squares))
+    {
+        return max_index;
+    }
+    
+    return 0;
 }
 
 double getValue()
 {
     double value = 0;
-    if (!scanf("%lf", &value))
+    if (scanf("%lf", &value) != 1 || !isfinite(value))
     {
-        printf("Ошибка ввода!\n");
+        printf("Ошибка ввода: введено недопустимое число!\n");
         abort();
     }
     return value;
