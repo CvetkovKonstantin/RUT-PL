@@ -33,7 +33,7 @@ double getSumE(const double e);
  * @param i текущий индекс
  * @return рассчитанное значение коэффициента
  */
-double getRecurent(const int i);
+double getRecurrent(const int i);
 
 /** 
  * @brief проверяет, что число положительное
@@ -102,7 +102,7 @@ void checkNonNegative(const int value)
     }
 }
 
-double getRecurent(const int i)
+double getRecurrent(const int i)
 {
     return -1.0 / i;
 }
@@ -111,12 +111,12 @@ double getSumN(const int n)
 {
     if (n == 0) return 0;
 
-    double current = -1.0;  
-    double result = current;
+    double current = 1.0;  
+    double result = 0.0;
 
-    for (int i = 1; i < n; i++)
+    for (int i = 1; i <= n; i++)
     {
-        current *= getRecurent(i);
+        current *= getRecurrent(i);
         result += current;
     }
     return result;
@@ -124,14 +124,16 @@ double getSumN(const int n)
 
 double getSumE(const double e)
 {
-    double current = -1.0;  
+    double current = 1.0;  
     double result = 0.0;
     int i = 1;
     
-    while (fabs(current) >= e)
+    while (1)
     {
+        current *= getRecurrent(i);
+        if (fabs(current) < e)
+            break;
         result += current;
-        current *= getRecurent(i);
         i++;
     }
     return result;
