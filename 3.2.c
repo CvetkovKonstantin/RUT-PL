@@ -1,140 +1,75 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include "stdio.h"
+#include "stdlib.h"
+#include "float.h"
+#include "math.h"
 
-/**
- * @brief считывает целое значение с клавиатуры с проверкой ввода
- * @return возвращает считанное значение
- */
-int getValue();
+/*
+* @brief Вычисляет по указанной в задании формуле
+* @params n - число, для которого нужно вычислить формулу
+* @return результат вычисления по формуле
+*/
+double sequency(int n);
 
-/**
- * @brief считывает вещественное значение с клавиатуры с проверкой ввода
- * @return возвращает считанное значение
- */
-double getDouble();
+/*
+* @brief Вычисляет предел функции func от n до бесконечности с точностью до 8 знаков после запятой
+* @params n - число, от которого нужно вычислять предел, func - указатель на функцию, от которой нужно вычислить предел
+* @return вычисленный предел
+*/
+double lim(int n, double (*func)(int));
 
-/**
- * @brief рассчитывает сумму n членов последовательности
- * @param n - заданное число членов
- * @return рассчитанное значение
- */
-double getSumN(const int n);
+/*
+* @brief Печатает сообщение message и получает целое число из stdin
+* @params message - сообщение для вывода
+* @return считанное число
+*/
+int getInt(char const *message);
 
-/**
- * @brief рассчитывает сумму членов последовательности с точностью e
- * @param e - заданная точность
- * @return рассчитанное значение
- */
-double getSumE(const double e);
-
-/**
- * @brief рассчитывает коэффициент рекуррентного выражения
- * @param i текущий индекс
- * @return рассчитанное значение коэффициента
- */
-double getRecurrent(const int i);
-
-/** 
- * @brief проверяет, что число положительное
- * @param value - проверяемое значение
- */
-void checkPositive(const double value);
-
-/** 
- * @brief проверяет, что число неотрицательное
- * @param value - проверяемое значение
- */
-void checkNonNegative(const int value);
-
-int main()
-{
-    printf("Введите n: ");
-    int n = getValue();
-    checkNonNegative(n);
-    printf("Сумма %d чисел последовательности равна %.4lf\n", n, getSumN(n));
-
-    printf("Введите e: ");
-    double e = getDouble();
-    checkPositive(e);
-    printf("Сумма последовательности с точностью %lf равна %.4lf\n", e, getSumE(e));
-
-    return 0;
+int main() {
+	int n = getInt("Enter n value:");
+	int e = getInt("Enter e value:");
+	size_t k = 0;
+	double sum = 0;
+	for (k = 1; k <= n; ++k) {
+		sum += sequency(k);
+	}
+	double limit = lim(e, sequency);
+	puts("Answers:\n");
+	printf("a) %lf\n b) %lf\n", sum, limit);
+	return 0;
 }
 
-int getValue()
-{
-    int value = 0;
-    if (scanf("%d", &value) != 1)
-    {
-        printf("Ошибка ввода!\n");
-        exit(1);
-    }
-    return value;
+int getInt(char const *message) {
+	printf("%s\n", message);
+	int value = 0;
+	scanf("%d", &value);
+	if (value <= 0) {
+		puts("Invalid input!\n");
+		abort();
+	}
+	return value;
+}
+	
+double sequency(int n) {
+        int k = 0;
+        double sum = 0;
+        double prev = 1;
+        double curr = -1;
+        for (k = 2; k <= n; ++k) {
+                 curr = prev * (-1/((double)k));
+                 sum += curr;
+                 prev = curr;
+        }
+        return sum;
 }
 
-double getDouble()
-{
-    double value = 0;
-    if (scanf("%lf", &value) != 1)
-    {
-        printf("Ошибка ввода!\n");
-        exit(1);
-    }
-    return value;
-}
-
-void checkPositive(const double value)
-{
-    if (value <= 0)
-    {
-        printf("Ошибка: значение должно быть положительным!\n");
-        exit(1);
-    }
-}
-
-void checkNonNegative(const int value)
-{
-    if (value < 0)
-    {
-        printf("Ошибка: значение должно быть неотрицательным!\n");
-        exit(1);
-    }
-}
-
-double getRecurrent(const int i)
-{
-    return -1.0 / i;
-}
-
-double getSumN(const int n)
-{
-    if (n == 0) return 0;
-
-    double current = 1.0;  
-    double result = 0.0;
-
-    for (int i = 1; i <= n; i++)
-    {
-        current *= getRecurrent(i);
-        result += current;
-    }
-    return result;
-}
-
-double getSumE(const double e)
-{
-    double current = 1.0;  
-    double result = 0.0;
-    int i = 1;
-    
-    while (1)
-    {
-        current *= getRecurrent(i);
-        if (fabs(current) < e)
-            break;
-        result += current;
-        i++;
-    }
-    return result;
+double lim(int n, double (*func)(int)) {
+	double a = (double)func(n);
+	double b = (double)func(n + 1);
+	double arg = n + 2;
+	while (fabs(a - b) >= DBL_MIN) {
+		a = b;
+		b = func(arg);
+		++arg;
+	}
+	return b;
 }
