@@ -1,51 +1,143 @@
 #include <stdio.h>
 #include <math.h>
+#include <float.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-double arctg_series(double x, double epsilon) {
-   
-    if (fabs(x) > 1.0) {
-        double sign = (x > 0) ? 1.0 : -1.0;
-        return sign * (3.14159265358979323846 / 2.0) - arctg_series(1.0 / x, epsilon);
+/**
+ * @brief Проверяет корректность ввода размера массива и возвращает его.
+ * @param message Сообщение для пользователя.
+ * @return Введенное целое число.
+ */
+float validate_input(const char* message);
+
+/**
+ * @brief Вычисляет значение atan(x).
+ * @param x - Аргумент функции.
+ * @return Значение atan(x).
+ */
+double GetEPowerX(double x);
+
+/**
+ * @brief Вычисляет текущий член рекуррентного ряда.
+ * @param x - Аргумент ряда.
+ * @param n - Порядковый номер члена ряда.
+ * @return Значение текущего члена рекуррентного ряда.
+ */
+double GetRecurrent(double x, double n);
+
+/**
+ * @brief Вычисляет сумму ряда с заданной точностью e.
+ * @param x - Аргумент ряда.
+ * @param e - Точность вычисления суммы ряда.
+ * @return Значение суммы ряда.
+ */
+double GetSumOfSeries(double x, double e);
+
+/**
+ * @brief Форматирует вывод для заданных значений аргумента, функции и ряда.
+ * @param argument - Значение аргумента.
+ * @param function - Значение функции (atan(x)).
+ * @param series - Значение суммы ряда.
+ */
+void FormatOutput(double argument, double function, double series);
+
+/**
+ * @brief Проверяет корректность интервала и шага.
+ * @param xStart Начальное значение интервала.
+ * @param xFinish Конечное значение интервала.
+ * @param xStep Шаг интервала.
+ */
+void check_interval(double xStart, double xFinish, double xStep);
+
+/**
+ * @brief Проверяет условия для значения epsilon.
+ * @param e - Значение точности для проверки.
+ * @param firstTerm - Значение первого члена последовательности.
+ * @return true, если условия выполняются, иначе false.
+*/
+void checkEpsilonConditions(float e, float firstTerm);
+
+/**
+ * @brief Основная функция программы.
+ * @return Возвращает 0 в случае успешного выполнения программы, иначе 1.
+ */
+int main() {
+
+    const float xStart = validate_input("Введите начальное значение x: ");
+    const float xFinish = validate_input("Введите конечное значение x: ");
+    const float xStep = validate_input("Введите шаг x: ");
+    const float e = validate_input("Введите точность epsilon: ");
+
+    check_interval(xStart, xFinish, xStep);
+    checkEpsilonConditions(e, xStart);
+
+    double x = xStart;
+    while (x <= xFinish + DBL_EPSILON)
+    {
+        FormatOutput(x, GetEPowerX(x), GetSumOfSeries(x, e));
+        x += xStep;
     }
-    
-    double sum = x;
-    double term = x;
-    int n = 1;
-    int max_iterations = 1000;
-    
-    while (fabs(term) > epsilon && n < max_iterations) {
-        term = -term * x * x * (2.0 * n - 1.0) / (2.0 * n + 1.0);
-        sum += term;
+
+    return 0;
+}
+
+float validate_input(const char* message) {
+    float input;
+    printf("%s", message);
+
+    if (scanf_s("%f", &input) != 1) {
+        printf("Ошибка ввода\a");
+        exit(EXIT_SUCCESS);
+    }
+
+    return input;
+}
+
+double GetEPowerX(const double x)
+{
+    return atan(x);
+}
+
+double GetRecurrent(double x, double n)
+{
+    return -(n * 2 + 1) * pow(x, 2) / (n * 2 + 3);
+}
+
+double GetSumOfSeries(const double x, const double e)
+{
+    double current = x;
+    double sum = 0;
+    double n = 0;
+
+    while (fabs(current) > e - DBL_EPSILON) {
+        sum += current;
+        current *= GetRecurrent(x, n);
         n++;
     }
-    
+
     return sum;
 }
 
-int main() {
-    const double a = -2.0;
-    const double b = -0.1;
-    const double h = 0.1;
-    const double epsilon = 4e-5;
-    
-    printf("Табулирование функции arctg(x) и суммы функционального ряда\n");
-    printf("Интервал: [%.1f, %.1f], шаг: %.1f, точность: %.0e\n\n", a, b, h, epsilon);
-    printf("%-10s %-15s %-15s\n", "x", "arctg(x)", "S(ряд)");
-    printf("----------------------------------------\n");
-    
+void FormatOutput(const double argument, const double function, const double series)
+{
+    printf("%10.1f | %15.6f | %15.6f\n", argument, function, series);
+}
 
-    double values[] = {-2.0, -1.9, -1.8, -1.7, -1.6, -1.5, -1.4, -1.3, -1.2, -1.1,
-                      -1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1};
-    
-    int count = sizeof(values) / sizeof(values[0]);
-    
-    for (int i = 0; i < count; i++) {
-        double x = values[i];
-        double exact_value = atan(x);
-        double series_value = arctg_series(x, epsilon);
-        
-        printf("%-10.2f %-15.6f %-15.6f\n", x, exact_value, series_value);
+void check_interval(double xStart, double xFinish, double xStep) {
+    if (xFinish - xStart < DBL_EPSILON) {
+        printf("Неправильно введен интервал");
+        exit(EXIT_FAILURE);
     }
-    
-    return 0;
+    else if (xStep < DBL_EPSILON) {
+        printf("Неправильно введен шаг");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void checkEpsilonConditions(float e, float firstTerm) {
+    if (e > -DBL_EPSILON || e <= fabs(firstTerm)) {
+        puts("Ошибка ввода");
+        exit(EXIT_FAILURE);
+    }
 }
