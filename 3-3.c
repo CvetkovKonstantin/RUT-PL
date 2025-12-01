@@ -1,20 +1,20 @@
 #include<stdio.h>
-#include<math.h>  
+#include<math.h>
 #include<stdlib.h>
 #include<float.h>
 
-/**
-* @brief Рассчитывает сумму n членов ряда arctg(x)
-* @param n - число членов последовательности
-* @param x - аргумент функции
-* @return Рассчитанное значение
-*/
-double defSumm(const int n, const double x);
 
 /**
-* @brief Рассчитывает сумму ряда arctg(x) с заданной точностью e
-* @param e - точность рассчёта
-* @param x - аргумент функции
+* @brief Рассчитывает значение функции в точке
+* @param x - точка
+* @return Рассчитанное значение
+*/
+double function(const double x);
+
+/**
+* @brief Рассчитывает значение рекурентной формулы с заданной точностью e
+* @param e - точность рассчёта 
+* @param x - значение параметра x, участвующее в расcчёте
 * @return Рассчитанное значение
 */
 double defSummE(const double e, const double x);
@@ -28,7 +28,7 @@ double defValid();
 /**
  * @brief Рассчитывает коэффициент рекуррентного выражения
  * @param i - текущий индекс
- * @param x - аргумент функции
+ * @param x - значение параметра x, участвующее в раcсчёте
  * @return Рассчитанное значение коэффициента
  */
 double getRecurent(const int i, const double x);
@@ -40,6 +40,27 @@ double getRecurent(const int i, const double x);
 void CheckValue(const double input);
 
 /**
+* @brief Проверяет значения на условие
+* @param end - значение конца промежутка
+* @param start - значение начала промежутка
+*/
+void checkEndStart(const double start, const double end);
+
+/**
+* @brief Проверяет значение на условие
+* @param step - значение шага
+*/
+void checkStep(const double step);
+
+
+/**
+* @brief Проверяет значение на условие
+* @param x - значение параметра x
+* @return Возвращает 0 или 1 в зависимости от истинности выражения
+*/
+_Bool checkX(const double x);
+
+/**
 * @brief Точка входа в программу
 * @return Возвращает 0, если программа была выполнена корректно, иначе 1
 */
@@ -47,30 +68,46 @@ int main(void)
 {
 	system("chcp 1251");
 
-	printf("Введите значение x: ");
-	double x = defValid();
-
-	printf("Введите целое число n: ");
-	int n = (int) defValid();
-	CheckValue(n);
-
-	printf("Сумма первых %d членов ряда arctg(%.2f) = %.10lf\n", n, x, defSumm(n, x));
-	
-	printf("\nВведите точность e: ");
+	printf("Введите число e: ");
 	double e = defValid();
 	CheckValue(e);
 
-	printf("Сумма ряда arctg(%.2f) с точностью %.2e = %.10lf\n", x, e, defSummE(e, x));
-	
-	printf("\nПроверка: arctg(%.2f) = %.10lf\n", x, atan(x));
+	printf("Введите начальное значение: ");
+	double start = defValid();
+	printf("Введите конечное значение: ");
+	double end = defValid();
+	checkEndStart(start, end);
+
+	printf("Введите шаг: ");
+	double step = defValid();
+	checkStep(step);
+
+	printf("%-10s%-25s%-10s\n", "x", "f(x)", "Summ(x)");
+	for (double x = start; x <= end + DBL_EPSILON; x += step)
+	{
+		if (checkX(x))
+		{
+			printf("%-10.2lf%-25.4lf%-10.4lf\n", x, function(x), defSummE(e,x));
+		}
+		else
+		{
+			printf("%-10.2lf%-25s%-10s\n", x, "Функция не определена", "Сумма ряда не определена");
+		}
+
+	}
 
 	return 0;
+}
+
+double function(const double x)
+{
+	return atan(x);
 }
 
 double defValid()
 {
 	double valid = 0;
-	if (!scanf_s("%lf", &valid))
+	if (!scanf("%lf", &valid))
 	{
 		printf("Error\n");
 		exit(1);
@@ -88,32 +125,52 @@ void CheckValue(const double input)
 	}
 }
 
-double defSumm(const int n, const double x)
-{
-	double current = x;  
-	double result = current;
-	for (int i = 1; i < n; i++)  
-	{
-		current *= getRecurent(i, x);
-		result += current;
-	}
-	return result;
-}
 
 double defSummE(const double e, const double x)
 {
-	double current = x; 
+	double current = x;
 	double result = 0;
-	for (int i = 1; fabs(current) > e; i++) 
+	int i = 0;
+	
+	// Исправляем: сначала проверяем, потом добавляем
+	while (fabs(current) > e)
 	{
 		result += current;
+		i++;
 		current *= getRecurent(i, x);
 	}
+	
 	return result;
 }
+
+void checkEndStart(const double start, const double end)
+{
+	if (!(start < end))
+	{
+		printf("Error\n Значения не должны совпадать\n Значение начала не может быть больше значения конца\n");
+		exit(1);
+	}
+}
+
+void checkStep(const double step)
+{
+	if (step <= DBL_EPSILON)
+	{
+		printf("Error\n Шаг должен быть больше 0\n");
+		exit(1);
+	}
+}
+
 
 double getRecurent(const int i, const double x)
 {
 
-	return -x * x * (2.0 * i - 1.0) / (2.0 * i + 1.0);
+	double n = (double)i;
+	return -x * x * (2.0 * n - 1.0) / (2.0 * n + 1.0);
+}
+
+
+_Bool checkX(const double x)
+{
+	return 1;
 }
