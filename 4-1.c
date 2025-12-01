@@ -1,161 +1,307 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#define scanf_s scanf
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<time.h>
 
 /**
- * @return Ввод данных типа int
- * @return Введенное значение
- */
-int Value();
+* @brief Считывает значение, введённое с клавиатуры, с проверкой ввода
+* @return Считанное значение
+*/
+int getValid();
 
-size_t getSize(char* message);
+/**
+* @brief Проверяет что переменная не меньше единицы
+* @param input - значение проверяемой переменной
+*/
+void checkValueForN(const int input);
 
-void fillArray(int* arr, const size_t size);
-void printArray(int* arr, const size_t size);
-void fillRandom(int* arr, const size_t size);
-int* copyArray(const int* arr, const size_t size);
+/**
+* @brief Проверяет, лежит ли число в указанном диапазоне
+* @param input - значение проверяемой переменной
+*/
+void checkValue(const int input, const int min, const int max);
 
-// Функции для варианта 10
-int sumNegativeElements(int* arr, const size_t size);
-int countPositiveLessThanA(int* arr, const size_t size, int A);
-int findLastPairDifferentSigns(int* arr, const size_t size);
+/**
+* @brief Считает сумму согласно условию №1
+* @param arr - массив
+* @param size - размер массива
+* @return Посчитанное значение
+*/
+int defForTask1(const int* arr, const size_t size);
 
-enum {RANDOM = 1, MANUAL};
+/**
+* @brief Выполняет задание №2
+* @param arr - массив
+* @param size - размер массива
+*/
+void defForTask2(const int* arr, const size_t size);
 
-int main()
+/**
+* @brief Выполняет задание №3
+* @param arr - массив
+* @param size - размер массива
+*/
+void defForTask3(const int* arr, const size_t size);
+
+/**
+* @brief Находит минимальное значение массива
+* @param arr - массив
+* @param size - размер массива
+* @return Возвращает минимальный элемент массива
+*/
+int defMINN(const int* arr, const size_t size);
+
+/**
+* @brief Находит максимальное значение массива
+* @param arr - массив
+* @param size - размер массива
+* @return Возвращает максимальный элемент массива
+*/
+int defMAXX(const int* arr, const size_t size);
+
+/**
+* @brief Проверяет диапазон на корректность ввода
+* @param min - минимально возможный элемент массива
+* @param max - максимально возможный элемент массива
+*/
+void defCheckMinMax(const int min, const int max);
+
+/**
+* @brief Заполняет массив элементами, который пользователь вводит с клавиатуры, c учётом максимально и минимально возможного
+* @param arr - массив
+* @param size - размер массива
+* @param min - минимально возможный элемент массива
+* @param max - максимально возможный элемент массива
+*/
+void getManual(int* arr, const size_t size, const int min, const int max);
+
+/**
+* @brief Заполняет массив случайными элементами, c учётом максимально и минимально возможного
+* @param arr - массив
+* @param size - размер массива
+* @param min - минимально возможный элемент массива
+* @param max - максимально возможный элемент массива
+*/
+void getRandom(int* arr, const size_t size, const int min, const int max);
+
+/**
+* @brief Выводит все элементы массива на экран
+* @param arr - массив
+* @param size - размер массива
+*/
+void defPrintArr(const int* arr, const size_t size);
+
+/**
+* @brief Копирует все элементы массива в новый
+* @param arr - массив
+* @param size - размер массива
+* @return Новый массив, идентичный старому
+*/
+int* defcopyArr(const int* arr, const size_t size);
+
+/**
+* @brief Проверяет корректно ли выделена память под массив
+* @param arr - массив
+*/
+void check_pointer(const int* arr);
+
+/**
+* @brief Находит минимальный индекс числа в массиве, который равен заданному числу
+* @param arr - массив
+* @param size - размер массива
+* @param num - число
+* @return Индекс числа
+*/
+const size_t defidx(const int* arr, const size_t size, const int num);
+
+/**
+* @brief Находит номер последней пары соседних элементов с разными знаками
+* @param arr - массив
+* @param size - размер массива
+* @return Номер первого элемента в паре (0 если не найдено)
+*/
+size_t findLastDiffSignPair(const int* arr, const size_t size);
+
+/**
+* @brief CHOISE_ONE - первый выбор (Ручное заполнение массива)
+* @brief CHOISE_TWO - второй выбор (Автоматическое заполнение массива)
+* @brief TASK_ONE - выполнение первого задания
+* @brief TASK_TWO - выполнение второго задания
+* @brief TASK_THREE - выполнение третьего задания
+*/
+enum { CHOISE_ONE = 1, CHOISE_TWO, TASK_ONE = 1, TASK_TWO, TASK_THREE };
+
+/**
+* @brief Точка входа в программу
+* @return Возвращает 0, если программа была выполнена корректно, иначе 1
+*/
+int main(void)
 {
-    srand(time(NULL)); 
-    
-    size_t size = getSize("Введите размер массива:  ");
-    int* arr = malloc(size * sizeof(int));
-    if (arr == NULL)
+    system("chcp 1251");
+
+    printf("Введите размер массива: ");
+    size_t size = (size_t)getValid();
+    checkValueForN(size);
+
+    int* A = calloc(size, sizeof(int));
+    check_pointer(A);
+
+    printf("Введите диапазон, в котором будут задаваться числа массива: \n");
+    const int min = getValid();
+    const int max = getValid();
+    defCheckMinMax(min, max);
+    printf("Числа массива будут задаваться в диапазоне [%d,%d]\n", min, max);
+
+    printf("\nКак будет заполнен массив?\n %d - Ручной ввод\n %d - Автоматический ввод\n", CHOISE_ONE, CHOISE_TWO);
+    int choise = getValid();
+
+    switch (choise)
     {
-        printf("error");
+    case CHOISE_ONE:
+        getManual(A, size, min, max);
+        break;
+
+    case CHOISE_TWO:
+        getRandom(A, size, min, max);
+        break;
+
+    default:
+        fprintf(stderr, "Error");
+        free(A);
         exit(1);
     }
-    
-    printf("Выберите способ заполнения массива:\n"
-            "%d - случайными числами, %d - вручную: ", RANDOM, MANUAL);
-    int choice = Value();
-    switch(choice)
+
+    defPrintArr(A, size);
+    int* copyA = defcopyArr(A, size);
+    check_pointer(copyA);
+
+    printf("\nКакие будут преобразования?\n%d - Найти сумму отрицательных элементов\n%d - Найти количество тех элементов, значения которых положительны и не превосходят заданного числа А\n%d - Найти номер последней пары соседних элементов с разными знаками\n", TASK_ONE, TASK_TWO, TASK_THREE);
+    int second_choise = getValid();
+
+    switch (second_choise)
     {
-        case RANDOM:
-            fillRandom(arr, size);
-            break;
-        case MANUAL:
-            fillArray(arr, size);
-            break;
-        default:
-            printf("error");
-            free(arr);
-            exit(1);
+    case TASK_ONE:
+        printf("\nСумма отрицательных элементов = %d\n", defForTask1(copyA, size));
+        break;
+
+    case TASK_TWO:
+        defForTask2(copyA, size);
+        break;
+
+    case TASK_THREE:
+        defForTask3(copyA, size);
+        break;
+
+    default:
+        fprintf(stderr, "Error");
+        free(A);
+        free(copyA);
+        exit(1);
     }
 
-    printf("Исходный массив: ");
-    printArray(arr, size);
-   
-    int sumNeg = sumNegativeElements(arr, size);
-    printf("\n1. Сумма отрицательных элементов: %d\n", sumNeg);
-    
-   
-    printf("Введите число A для задания 2: ");
-    int A = Value();
-    int countPos = countPositiveLessThanA(arr, size, A);
-    printf("2. Количество положительных элементов <= %d: %d\n", A, countPos);
-    
+    free(A);
+    free(copyA);
 
-    int lastPairIndex = findLastPairDifferentSigns(arr, size);
-    if (lastPairIndex != -1) {
-        printf("3. Номер последней пары с разными знаками: %d (элементы %d и %d)\n", 
-               lastPairIndex, arr[lastPairIndex], arr[lastPairIndex + 1]);
-    } else {
-        printf("3. Пар с разными знаками не найдено\n");
-    }
-
-    free(arr);
     return 0;
 }
 
-int Value()
+int getValid()
 {
-    int value = 0;
-    if (!scanf_s("%d", &value))
+    int valid = 0;
+    if (!scanf_s("%d", &valid))
     {
-        printf("ERROR\n");
-        abort();
+        fprintf(stderr, "Error");
+        exit(1);
     }
-    return value;
+    return valid;
 }
 
-size_t getSize(char* message)
+void checkValue(const int input, const int min, const int max)
 {
-    printf("%s", message);
-    int value = Value();
-    if (value <= 0)
+    if (input > max || input < min)
     {
-        printf("ERROR");
-        abort();
+        fprintf(stderr, "Error\n Число должно лежать в промежутке [%d;%d]", min, max);
+        exit(1);
     }
-    return (size_t)value;
 }
 
-void fillArray(int* arr, const size_t size)
+void getManual(int* arr, const size_t size, const int min, const int max)
 {
+    check_pointer(arr);
+
+    printf("\nВведи %zu элемент-а(ов) массива:\n", size);
     for (size_t i = 0; i < size; i++)
     {
-        printf("Введите элемент [%zu]: ", i);
-        arr[i] = Value();
+        int num = getValid();
+        checkValue(num, min, max);
+        printf("A[%zu] = %d\n", i, num);
+        arr[i] = num;
     }
 }
 
-void printArray(int* arr, const size_t size)
+void defCheckMinMax(const int min, const int max)
 {
+    if (min >= max)
+    {
+        fprintf(stderr, "Error\n Неправильно указан диапазон");
+        exit(1);
+    }
+}
+
+void getRandom(int* arr, const size_t size, const int min, const int max)
+{
+    check_pointer(arr);
+    srand(time(NULL));
+
     for (size_t i = 0; i < size; i++)
     {
-        printf("%d ", arr[i]);
+        int numm = (rand() % (max - min + 1)) + min;
+        arr[i] = numm;
     }
-    printf("\n");
 }
 
-void fillRandom(int* arr, const size_t size)
+void defPrintArr(const int* arr, const size_t size)
 {
-    int start = -100;
-    int end = 200;
-    printf("Заполнение случайными числами в диапазоне [%d, %d]\n", start, end);
+    check_pointer(arr);
+
+    printf("\nВведённый массив: \n");
     for (size_t i = 0; i < size; i++)
     {
-        arr[i] = (rand() % (end - start + 1)) + start;
+        printf("%d\n", arr[i]);
     }
 }
 
-int* copyArray(const int* arr, const size_t size)
+void checkValueForN(const int input)
 {
-    int* copyArr = malloc(sizeof(int)*size);
-    for (size_t i =0; i<size; i++)
+    if (input < 1)
     {
-        copyArr[i] = arr[i];
+        fprintf(stderr, "Error\nЧисло должно быть не меньше 1");
+        exit(1);
     }
-    return copyArr;
 }
 
-
-int sumNegativeElements(int* arr, const size_t size)
+int defForTask1(const int* arr, const size_t size)
 {
-    int sum = 0;
+    check_pointer(arr);
+
+    int summ = 0;
     for (size_t i = 0; i < size; i++)
     {
         if (arr[i] < 0)
         {
-            sum += arr[i];
+            summ += arr[i];
         }
     }
-    return sum;
+    return summ;
 }
 
-
-int countPositiveLessThanA(int* arr, const size_t size, int A)
+void defForTask2(const int* arr, const size_t size)
 {
+    check_pointer(arr);
+    
+    printf("Введите число A: ");
+    int A = getValid();
+    
     int count = 0;
     for (size_t i = 0; i < size; i++)
     {
@@ -164,20 +310,105 @@ int countPositiveLessThanA(int* arr, const size_t size, int A)
             count++;
         }
     }
-    return count;
+    
+    printf("\nКоличество элементов, значения которых положительны и не превосходят %d: %d\n", A, count);
 }
 
-
-int findLastPairDifferentSigns(int* arr, const size_t size)
+void defForTask3(const int* arr, const size_t size)
 {
-    int lastIndex = -1;
-    for (size_t i = 0; i < size - 1; i++)
+    check_pointer(arr);
+    
+    size_t result = findLastDiffSignPair(arr, size);
+    
+    if (result == 0)
     {
-        
-        if ((arr[i] > 0 && arr[i + 1] < 0) || (arr[i] < 0 && arr[i + 1] > 0))
+        printf("\nПары соседних элементов с разными знаками не найдены\n");
+    }
+    else
+    {
+        printf("\nНомер последней пары соседних элементов с разными знаками: %zu\n", result);
+        printf("Элементы пары: arr[%zu] = %d, arr[%zu] = %d\n", 
+               result - 1, arr[result - 1], result, arr[result]);
+    }
+}
+
+int defMAXX(const int* arr, const size_t size)
+{
+    check_pointer(arr);
+
+    int maxx = arr[0];
+    for (size_t i = 0; i < size; i++)
+    {
+        if (arr[i] > maxx)
         {
-            lastIndex = i; 
+            maxx = arr[i];
         }
     }
-    return lastIndex;
+    return maxx;
+}
+
+int* defcopyArr(const int* arr, const size_t size)
+{
+    check_pointer(arr);
+
+    int* copyArr = calloc(size, sizeof(int));
+    check_pointer(copyArr);
+    for (size_t i = 0; i < size; i++)
+    {
+        copyArr[i] = arr[i];
+    }
+    return copyArr;
+}
+
+int defMINN(const int* arr, const size_t size)
+{
+    check_pointer(arr);
+
+    int minn = arr[0];
+    for (size_t i = 0; i < size; i++)
+    {
+        if (arr[i] < minn)
+        {
+            minn = arr[i];
+        }
+    }
+    return minn;
+}
+
+const size_t defidx(const int* arr, const size_t size, const int num)
+{
+    size_t temp = 0;
+    for (size_t i = 0; i < size; i++)
+    {
+        if (arr[i] == num)
+        {
+            temp = i;
+            break;
+        }
+    }
+    return temp;
+}
+
+void check_pointer(const int* arr)
+{
+    if (arr == NULL)
+    {
+        fprintf(stderr, "Memory Error\n");
+        exit(1);
+    }
+}
+
+size_t findLastDiffSignPair(const int* arr, const size_t size)
+{
+    size_t lastPairIndex = 0;
+    
+    for (size_t i = 0; i < size - 1; i++)
+    {
+        if ((arr[i] > 0 && arr[i + 1] < 0) || (arr[i] < 0 && arr[i + 1] > 0))
+        {
+            lastPairIndex = i + 1; 
+        }
+    }
+    
+    return lastPairIndex;
 }
