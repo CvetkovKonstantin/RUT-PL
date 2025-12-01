@@ -1,75 +1,111 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "float.h"
-#include "math.h"
+#include<stdio.h>
+#include<math.h>
+#include<stdlib.h>
+#include<float.h>
 
-/*
-* @brief Вычисляет по указанной в задании формуле
-* @params n - число, для которого нужно вычислить формулу
-* @return результат вычисления по формуле
+/**
+* @brief Рассчитывает сумму n членов последовательности
+* @param n - число членов последовательности
+* @return Рассчитанное значение
 */
-double sequency(int n);
+double defSumm(const int n);
 
-/*
-* @brief Вычисляет предел функции func от n до бесконечности с точностью до 8 знаков после запятой
-* @params n - число, от которого нужно вычислять предел, func - указатель на функцию, от которой нужно вычислить предел
-* @return вычисленный предел
+/**
+* @brief Рассчитывает сумму членов последовательности с точностью e
+* @param e - точность рассчёта
+* @return Рассчитанное значение
 */
-double lim(int n, double (*func)(int));
+double defSummE(const double e);
 
-/*
-* @brief Печатает сообщение message и получает целое число из stdin
-* @params message - сообщение для вывода
-* @return считанное число
+/**
+* @brief Считывает значение, введённое с клавиатуры, с проверкой ввода
+* @return Считанное значение
 */
-int getInt(char const *message);
+double defValid();
 
-int main() {
-	int n = getInt("Enter n value:");
-	int e = getInt("Enter e value:");
-	size_t k = 0;
-	double sum = 0;
-	for (k = 1; k <= n; ++k) {
-		sum += sequency(k);
-	}
-	double limit = lim(e, sequency);
-	puts("Answers:\n");
-	printf("a) %lf\n b) %lf\n", sum, limit);
-	return 0;
+/**
+ * @brief Рассчитывает коэффициент рекуррентного выражения
+ * @param k - текущий индекс 
+ * @return Рассчитанное значение коэффициента
+ */
+double getRecurent(const int k);
+
+/**
+* @brief Точка входа в программу
+* @return Возвращает 0, если программа была выполнена корректно, иначе 1
+*/
+int main(void)
+{
+    system("chcp 1251");
+    
+    printf("Введите целое число n: ");
+    int n = (int)defValid();
+    if (n < 0)
+    {
+        printf("Error: n должно быть неотрицательным\n");
+        exit(1);
+    }
+    
+    printf("Сумма первых %d членов последовательности = %.10lf\n\n", n, defSumm(n));
+    
+    printf("Введите число e (точность): ");
+    double e = defValid();
+    if (e <= 0)
+    {
+        printf("Error: e должно быть положительным\n");
+        exit(1);
+    }
+    
+    printf("Сумма членов последовательности с точностью %.10lf = %.10lf\n", e, defSummE(e));
+    
+    return 0;
 }
 
-int getInt(char const *message) {
-	printf("%s\n", message);
-	int value = 0;
-	scanf("%d", &value);
-	if (value <= 0) {
-		puts("Invalid input!\n");
-		abort();
-	}
-	return value;
-}
-	
-double sequency(int n) {
-        int k = 0;
-        double sum = 0;
-        double prev = 1;
-        double curr = -1;
-        for (k = 2; k <= n; ++k) {
-                 curr = prev * (-1/((double)k));
-                 sum += curr;
-                 prev = curr;
-        }
-        return sum;
+double defValid()
+{
+    double valid = 0;
+    if (!scanf("%lf", &valid))
+    {
+        printf("Error: некорректный ввод\n");
+        exit(1);
+    }
+    return valid;
 }
 
-double lim(int n, double (*func)(int)) {
-	double a = (double)func(n);
-	double b = (double)func(n + 1);
-	double arg = n + 2;
-	while (fabs(a - b) >= DBL_MIN) {
-		a = b;
-		b = func(arg);
-		++arg;
-	}
-	return b;
+double defSumm(const int n)
+{
+    if (n == 0) return 0.0;
+    
+    double current = -1.0;
+    double result = current;
+    
+    for (int k = 1; k < n; k++) 
+    {
+        current *= getRecurent(k); 
+        result += current;
+    }
+    
+    return result;
+}
+
+double defSummE(const double e)
+{
+    double current = -1.0; 
+    double result = 0.0;
+    
+    int k = 1;
+    while (fabs(current) >= e)
+    {
+        result += current;
+        current *= getRecurent(k);
+        k++;
+    }
+    
+    return result;
+}
+
+double getRecurent(const int k)
+{
+    
+    return -1.0 / k;
 }
