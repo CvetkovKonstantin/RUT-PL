@@ -1,293 +1,472 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "time.h"
-#include "stdbool.h"
-#include "string.h"
-#include "math.h"
-
-enum Choice {manually, randomly};
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
 
 /**
-* @brief печатает массив на экран
-* @param **arr исходный массив, n и m - количество строк и столбцов соответственно
+* @brief Считывает число с проверкой ввода и проверяет на условие
+* @return Число
 */
-void printArr(int **arr, size_t n, size_t m);
+const size_t getValidForSize();
 
 /**
-* @brief Освобождает массив по указателю
-* @param **arr исходный массив, n - количество строк
+* @brief Считывает число с проверкой ввода
+* @return Число
 */
-void deleteArr(int **arr, size_t n);
+int getValidForDigit();
 
 /**
-* @brief считывает строку и проверяет, что в ней только числа
-* @param *arr строка матрицы (одномерный массив), size размер массива, index - индекс, после которого нужно вставить, elem - элемент, который нужно вставить
-* @return изменённый массив
+* @brief Проверяет промежуток на корректность
+* @param min_ - начало промежутка
+* @param max_ - конец промежутка
 */
-int *insert(int *arr, size_t size, size_t index, int elem);
+void check_min_max(const int min_, const int max_);
 
 /**
-* @brief заполняет массив целыми числами
-* @param ***arr двумерный массив, n и m - размеры массива
+* @brief Проверяет лежит ли число в промежутке [min;max]
+* @param value - число
+* @param min - нижняя граница значения элемента
+* @param max - верхняя граница значения элемента
 */
-void randomInput(int ***arr, size_t n, size_t m);
+void checkMinMaxForDigit(const int value, const int min, const int max);
 
 /**
-* @brief заполняет массив пользовательским вводом
-* @param ***arr двумерный массив, n и m - размеры массива
+* @brief Выделяет память под массив
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
+* @return Массив
 */
-void userInput(int ***arr, size_t n, size_t m);
+int** getMakeArrays(const size_t size_n, const size_t size_m);
 
 /**
-* @brief ищет максимальный элемент массива
-* @param **arr массив, n и m размер массива
-* @return максимальный элемент
+* @brief Создаёт новый массив, идентинчый элементами прообразу
+* @param arr - массив прообраз
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
+* @return Новый массив
 */
-int findMax(int **arr, size_t n, size_t m);
+int** getCopyArray(int** arr, const size_t size_n, const size_t size_m);
 
 /**
-* @brief ищет максимальный элемент массива
-* @param ***arr массив, n и m размер массива, max - максимальный элемент массива
-* @return массив bool, где на каждом индексе j стоит или не стоит флаг, есть ли в столбце максимальный элемент
+* @brief Проверяет, корректно ли выделилась память под массив
+* @param arr - массив
+* @param size_n - количество строк массива
 */
-int *findMaxColumns(int **arr, size_t n, size_t m, int max);
+void checkArraysFromMemory(int** arr, const size_t size_n);
 
 /**
-* @brief заменяет 0-е элементы столбца максимальным элементом в массиве
-* @param ***arr массив, m количество столбцов в массиве, max - максимальный элемент массива
+* @brief Выводит на экран полученный массив
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
 */
-void replaceMax(int ***arr, size_t m, int max);
+void printArrays(int** arr, const size_t size_n, const size_t size_m);
 
 /**
-* @brief вставляет нули после столбца, содержащего максимальный элемент в массиве
-* @param ***arr массив, n и m размер массива, maxIndexes - массив bool, где на каждом индексе j стоит или не стоит флаг, есть ли в столбце максимальный элемент
-* @return изменённый массив
+* @brief Заполняет массив элементами, который вводит пользователь
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
+* @param min - нижняя граница значения элемента
+* @param max - верхняя граница значения элемента
 */
-int insertZeroColumns(int ***arr, size_t n, size_t m, int *maxIndexes);
+void getManual(int** arr, const size_t size_n, const size_t size_m, const int min, const int max);
 
 /**
-* @brief выделяет память для массива
-* @param n и m размер массива
-* @return созданный массив
+* @brief Заполняет массив случайными элементами
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
+* @param min - нижняя граница значения элемента
+* @param max - верхняя граница значения элемента
 */
-int **initArray(size_t n, size_t m);
+void getRandom(int** arr, const size_t size_n, const size_t size_m, const int min, const int max);
 
 /**
-* @brief считывает целое число из stdin
-* @param message сообщение, выводимое пользователю перед вводом
-* @return введённое число
+* @brief Очищает выделенную память под массив
+* @param arr - массив
+* @param size_n - количество строк массива
 */
-size_t getSize(const char *message);
+void freeArraysMemory(int** arr, const size_t size_n);
 
 /**
-* @brief считывает массив целых чисел из stdin или заполняет его случайными числами (выбор предоставляется пользователю при вводе)
-* @param n, m Количество строк и столбцов в массиве соответственно
-* @return полученный массив
+* @brief Выводит новый массив согласно заданию №1
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
 */
-int **getIntArr(size_t n, size_t m);
+void defTaskOne(int** arr, const size_t size_n, const size_t size_m);
 
 /**
-* @brief предлагают пользователю выбор, заполнять массив случайными числами или числами из пользовательского ввода (stdin)
-* @return выбор пользователя
+* @brief Выводит новый массив согласно заданию №2
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количесвто столбцов массива
 */
-enum Choice getChoice();
+void defTaskTwo(int** arr, const size_t size_n, const size_t size_m);
 
 /**
-* @brief целое число из stdin и возвращает результат
-* @param message сообщение, выводимое пользователю перед вводом
-* @return считанное целое число
+* @param MANUAL - выбор ручного создания массива
+* @param RANDOM - выбор автоматического создания массива
+* @param TASK_ONE - выбор первого задания
+* @param TASK_TWO - выбор второго задания
 */
-int getInt(const char *message);
+enum { MANUAL = 1, RANDOM, TASK_ONE = 1, TASK_TWO };
 
 /**
-* @brief проверяет размер на корректность, если размер некорректен, выходит из программы
-* @param n, m размер
+* @brief Находит максимальный по модулю элемент во всем массиве
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количество столбцов массива
+* @return Максимальный по модулю элемент
 */
-void checkSize(size_t n);
+int findMaxAbsElement(int** arr, const size_t size_n, const size_t size_m);
 
-int main() {
-	size_t n = getSize("Enter count of rows in array: ");
-	size_t m = getSize("Enter count of columns in array: ");
-	int **arr = getIntArr(n, m);
-	int max = findMax(arr, n, m);
-	int *maxIndexes = findMaxColumns(arr, n, m, max);
-	printArr(arr, n, m);
-	// Заменяем нулевой элемент максимальным по модулю элементом массива
-	replaceMax(&arr, m, max);
-	int insertedColumns = insertZeroColumns(&arr, n, m, maxIndexes);
-	puts("Output array:\n");
-	printArr(arr, n, m + insertedColumns);
-	deleteArr(arr, n);
-	return 0;
+/**
+* @brief Находит количество столбцов, содержащих максимальный по модулю элемент
+* @param arr - массив
+* @param size_n - количество строк массива
+* @param size_m - количество столбцов массива
+* @param maxAbs - максимальный по модулю элемент
+* @return Количество столбцов с максимальным по модулю элементом
+*/
+int findColumnsWithMaxAbs(int** arr, const size_t size_n, const size_t size_m, int maxAbs);
+
+/**
+* @brief Точка входа в программу
+* @return Возвращает 0, если программа была выполнена корректно, иначе 1
+*/
+int main(void)
+{
+    system("chcp 1251");
+    system("CLS");
+    printf("Введите количество строк массива: ");
+    size_t size_n = getValidForSize();
+    printf("Введите количество столбцов массива: ");
+    size_t size_m = getValidForSize();
+    printf("\nВведите минимальное значение элемента массива: ");
+    const int min = getValidForDigit();
+    printf("Введите максимальное значение элемента массива: ");
+    const int max = getValidForDigit();
+    check_min_max(min, max);
+    printf("Элементы массива будут задаваться в промежутке [%d;%d]\n", min, max);
+    int** mainArray = getMakeArrays(size_n, size_m);
+    checkArraysFromMemory(mainArray, size_n);
+    printf("\nВыберите метод заполнение массива:\n%d - Ручное заполнение массива\n%d - Автоматическое заполнение массива\n", MANUAL, RANDOM);
+    int firstChoise = getValidForDigit();
+    switch (firstChoise)
+    {
+    case MANUAL:
+        getManual(mainArray, size_n, size_m, min, max);
+        break;
+    case RANDOM:
+        getRandom(mainArray, size_n, size_m, min, max);
+        break;
+    default:
+        fprintf(stderr, "Error\n    Ошибка выбора");
+        freeArraysMemory(mainArray, size_n);
+        exit(1);
+    }
+    int** newArray = getCopyArray(mainArray, size_n, size_m);
+    checkArraysFromMemory(newArray, size_n);
+    printArrays(newArray, size_n, size_m);
+    printf("\nВыберите выполняемую операцию с массивом:\n%d - Заменить нулевой элемент каждого столбца максимальным по модулю элементом массива\n%d - Вставить после каждого столбца, содержащего максимальный по модулю элемент массива, столбец из нулей\n", TASK_ONE, TASK_TWO);
+    int secondChoise = getValidForDigit();
+    switch (secondChoise)
+    {
+    case TASK_ONE:
+        defTaskOne(newArray, size_n, size_m);
+        break;
+    case TASK_TWO:
+        defTaskTwo(newArray, size_n, size_m);
+        break;
+    default:
+        fprintf(stderr, "Error\n    Ошибка выбора");
+        freeArraysMemory(newArray, size_n);
+        freeArraysMemory(mainArray, size_n);
+        exit(1);
+    }
+    freeArraysMemory(newArray, size_n);
+    freeArraysMemory(mainArray, size_n);
+    return 0;
 }
 
-size_t getSize(const char *message) {
-	int value = getInt(message);
-	checkSize(value);
-	return (size_t)value;
+const size_t getValidForSize()
+{
+    long int value = 0;
+    if (!scanf_s("%ld", &value)) 
+    {
+        fprintf(stderr, "Error\n    Ошибка ввода размерности массива");
+        exit(1);
+    }
+    if (value < 1)
+    {
+        fprintf(stderr, "Error\n    Ошибка ввода размерности массива");
+        exit(1);
+    }
+    size_t output = (size_t)value;
+    return output;
 }
 
-int **getIntArr(size_t n, size_t m) {
-	if (m <= 0 || n <= 0) {
-		puts("Invalid shape of array");
-		abort();
-	}
-	enum Choice filling = getChoice();
-	int **arr = initArray(n, m);
-	if (filling == randomly) {
-		randomInput(&arr, n, m);
-	} else if (filling == manually) {
-		userInput(&arr, n, m);
-	} else {
-		puts("Invalid choice!");
-		abort();
-	}
-	return arr;
+int getValidForDigit()
+{
+    int value = 0;
+    if (!scanf_s("%d", &value)) 
+    {
+        fprintf(stderr, "Error\n    Ошибка ввода");
+        exit(1);
+    }
+    return value;
 }
 
-
-int *insert(int *arr, size_t size, size_t index, int elem) {
-	int *tmp = (int*)calloc(size + 1, sizeof(size_t));
-	memset(tmp, 0, size + 1);
-	size_t i = 0;
-	int insertedColumns = 0;
-	for (i = 0; i < size; ++i) {
-		if (i == index) {
-			tmp[i + insertedColumns] = elem;
-			++insertedColumns;
-		}
-		tmp[i + insertedColumns] = arr[i];
-	}
-	free(arr);
-	arr = tmp;
-	return tmp;
+void check_min_max(const int min_, const int max_)
+{
+    if (min_ >= max_)
+    {
+        fprintf(stderr, "Error\n    Ошибка ввода промежутка");
+        exit(1);
+    }
 }
 
-void printArr(int **arr, size_t n, size_t m) {
-	puts("Array:\n");
-	size_t i = 0;
-	size_t j = 0;
-	for (i = 0; i < n; ++i) {
-		for (j = 0; j < m; ++j) {
-			printf("%d\t", arr[i][j]);
-		}
-		puts("\n");
-	}
+void checkMinMaxForDigit(const int value, const int min, const int max)
+{
+    if (value > max || value < min)
+    {
+        fprintf(stderr, "Error\n    Ошибка ввода, число вне промежутка");
+        exit(1);
+    }
 }
 
+int** getMakeArrays(const size_t size_n, const size_t size_m)
+{
+    int** arr = calloc(size_n, sizeof(int*));
 
-void randomInput(int ***arr, size_t n, size_t m) {
-	srand(time(NULL));
-	size_t i = 0, j = 0;
-	for (i = 0; i < n; ++i) {
-		for (j = 0; j < m; ++j) {
-			(*arr)[i][j] = rand() % 1000;
-		}
-	}
+    if (arr == NULL)
+    {
+        fprintf(stderr, "Error\n    Ошибка выделения памяти под массив");
+        exit(1);
+    }
+
+    for (size_t i = 0; i < size_n; i++)
+    {
+        arr[i] = calloc(size_m, sizeof(int));
+    }
+    return arr;
 }
 
-void userInput(int ***arr, size_t n, size_t m) {
-	puts("Enter array elements:\n");
-	int i = 0, j = 0;
-	for (i = 0; i < n; ++i) {
-		for (j = 0; j < m; ++j) {
-			(*arr)[i][j] = getInt(NULL);
-		}
-		puts("\n");
-	}
+void checkArraysFromMemory(int** arr, const size_t size_n)
+{
+    if (arr == NULL)
+    {
+        fprintf(stderr, "Error\n    Ошибка выделения памяти под массив");
+        exit(1);
+    }
+    else
+    {
+        for (size_t i = 0; i < size_n; i++)
+        {
+            if (arr[i] == NULL)
+            {
+                fprintf(stderr, "Error\n    Ошибка выделения памяти под массив");
+                exit(1);
+            }
+        }
+    }
 }
 
-int findMax(int **arr, size_t n, size_t m) {
-	int max = arr[0][0];
-	int i = 0;
-	int j = 0;
-	for (i = 0; i < n; ++i) {
-		for (j = 0; j < m; ++j) {
-			if (abs(arr[i][j]) > max) {
-				max = arr[i][j];
-			}
-		}
-	}
-	return max;
+void printArrays(int** arr, const size_t size_n, const size_t size_m)
+{
+    checkArraysFromMemory(arr, size_n);
+    printf("\nПолученный массив:\n");
+    for (size_t i = 0; i < size_n; i++)
+    {
+        for (size_t j = 0; j < size_m; j++)
+        {
+            printf("%5d", arr[i][j]);
+        }
+        printf("\n");
+    }
 }
 
-int *findMaxColumns(int **arr, size_t n, size_t m, int max) {
-	int *maxIndexes = calloc(m, sizeof(int));
-	memset(maxIndexes, 0, m);
-	int i = 0, j = 0;
-	for (i = 0; i < n; ++i) {
-		for (j = 0; j < m; ++j)
-		{
-			if (arr[i][j] == max) {
-				// если хоть одна строка содержит на индексе j максимальное число, значит столбец j содержит максимальное число
-				maxIndexes[j] = 1;
-			}
-		}
-	}
-	return maxIndexes;
+void getManual(int** arr, const size_t size_n, const size_t size_m, const int min, const int max)
+{
+    checkArraysFromMemory(arr, size_n);
+    printf("\nВведите %zu элементов массива:\n", size_n * size_m);
+    for (size_t i = 0; i < size_n; i++)
+    {
+        for (size_t j = 0; j < size_m; j++)
+        {
+            int num = getValidForDigit();
+            checkMinMaxForDigit(num, min, max);
+            printf("A[%zu][%zu] = %d\n", i, j, num);
+            arr[i][j] = num;
+        }
+    }
 }
 
-void replaceMax(int ***arr, size_t m, int max) {
-	int j = 0;
-	for (j = 0; j < m; ++j) {
-		(*arr)[0][j] = max;
-	}
+void getRandom(int** arr, const size_t size_n, const size_t size_m, const int min, const int max)
+{
+    checkArraysFromMemory(arr, size_n);
+    srand(time(NULL));
+    for (size_t i = 0; i < size_n; i++)
+    {
+        for (size_t j = 0; j < size_m; j++)
+        {
+            arr[i][j] = rand() % (max - min + 1) + min;
+        }
+    }
 }
 
-int insertZeroColumns(int ***arr, size_t n, size_t m, int *maxIndexes) {
-	int insertedColumns = 0;
-	int i = 0, j = 0;
-	for (i = 0; i < n; ++i) {
-		insertedColumns = 0;
-		for (j = 0; j < m; ++j) {
-			if (maxIndexes[j]) {
-				(*arr)[i] = insert((*arr)[i], m + insertedColumns, j + insertedColumns + 1, 0);
-				insertedColumns++;
-			}
-		}
-	}
-	return insertedColumns;
+void freeArraysMemory(int** arr, const size_t size_n)
+{
+    checkArraysFromMemory(arr, size_n);
+    for (size_t i = 0; i < size_n; i++)
+    {
+        free(arr[i]);
+    }
+    free(arr);
 }
 
-int **initArray(size_t n, size_t m) {
-	int **arr = (int**)calloc(n, sizeof(int*));
-	size_t i = 0;
-	for (i = 0; i < n; ++i) {
-		arr[i] = (int*)calloc(m, sizeof(int));
-	}
-	return arr;
+int** getCopyArray(int** arr, const size_t size_n, const size_t size_m)
+{
+    checkArraysFromMemory(arr, size_n);
+    int** array = getMakeArrays(size_n, size_m);
+    checkArraysFromMemory(array, size_n);
+    for (size_t i = 0; i < size_n; i++)
+    {
+        for (size_t j = 0; j < size_m; j++)
+        {
+            array[i][j] = arr[i][j];
+        }
+    }
+    return array;
 }
 
-enum Choice getChoice() {
-    printf("\nDo you want to enter the array or fill it random digits? (%d - for enter, %d - for random): ", (int)manually, (int)randomly);
-    int temp = getInt(NULL);
-    return (enum Choice)temp;
+int findMaxAbsElement(int** arr, const size_t size_n, const size_t size_m)
+{
+    checkArraysFromMemory(arr, size_n);
+    int maxAbs = abs(arr[0][0]);
+    for (size_t i = 0; i < size_n; i++)
+    {
+        for (size_t j = 0; j < size_m; j++)
+        {
+            int absValue = abs(arr[i][j]);
+            if (absValue > maxAbs)
+            {
+                maxAbs = absValue;
+            }
+        }
+    }
+    return maxAbs;
 }
 
-void deleteArr(int **arr, size_t n) {
-	int i = 0;
-	for (i = 0; i < n; ++i) {
-		free(arr[i]);
-	}
-	free(arr);
+int findColumnsWithMaxAbs(int** arr, const size_t size_n, const size_t size_m, int maxAbs)
+{
+    checkArraysFromMemory(arr, size_n);
+    int count = 0;
+    for (size_t j = 0; j < size_m; j++)
+    {
+        for (size_t i = 0; i < size_n; i++)
+        {
+            if (abs(arr[i][j]) == maxAbs)
+            {
+                count++;
+                break;
+            }
+        }
+    }
+    return count;
 }
 
-int getInt(const char *message) {
-	if (message) {
-		printf("%s", message);
-	}
-	int value = 0;
-	if (scanf("%d", &value) != 1) {
-		puts("Error!\n");
-		abort();
-	}
-	// По условию нужны целые числа, т.е. знаковые, поэтому знак не проверяем
-	return value;
+void defTaskOne(int** arr, const size_t size_n, const size_t size_m)
+{
+    checkArraysFromMemory(arr, size_n);
+    int maxAbs = findMaxAbsElement(arr, size_n, size_m);
+    int replaced = 0;
+    for (size_t j = 0; j < size_m; j++)
+    {
+        for (size_t i = 0; i < size_n; i++)
+        {
+            if (arr[i][j] == 0)  
+            {
+                arr[i][j] = maxAbs;
+                replaced++;
+            }
+        }
+    }
+    
+    printf("\nМаксимальный по модулю элемент массива: %d\n", maxAbs);
+    printf("Заменено %d нулевых элементов\n", replaced);
+    printf("Массив после замены нулевых элементов каждого столбца на максимальный по модулю элемент:\n");
+    printArrays(arr, size_n, size_m);
 }
 
-void checkSize(size_t n) {
-	if (n <= 0) {
-		puts("Error!\n");
-		abort();
-	}
+void defTaskTwo(int** arr, const size_t size_n, const size_t size_m)
+{
+    checkArraysFromMemory(arr, size_n);
+    
+
+    int maxAbs = findMaxAbsElement(arr, size_n, size_m);
+    int count = findColumnsWithMaxAbs(arr, size_n, size_m, maxAbs);
+    
+    if (count == 0)
+    {
+        printf("\nМаксимальный по модулю элемент: %d\n", maxAbs);
+        printf("Столбцов с максимальным по модулю элементом не найдено\n");
+        printf("Массив не изменён:\n");
+        printArrays(arr, size_n, size_m);
+    }
+    else
+    {
+		size_t new_size_m = size_m + count;
+    	if (new_size_m == 0)
+        {
+            printf("\nМаксимальный по модулю элемент: %d\n", maxAbs);
+            printf("Все столбцы содержат максимальный по модулю элемент\n");
+            printf("Результат: пустой массив\n");
+            return;
+        }
+        
+        int** newarr = getMakeArrays(size_n, new_size_m);
+        checkArraysFromMemory(newarr, size_n);
+        
+        size_t new_col = 0;
+        for (size_t j = 0; j < size_m; j++)
+        {
+          
+            for (size_t i = 0; i < size_n; i++)
+            {
+                newarr[i][new_col] = arr[i][j];
+            }
+            new_col++;
+            
+
+            int containsMaxAbs = 0;
+            for (size_t i = 0; i < size_n; i++)
+            {
+                if (abs(arr[i][j]) == maxAbs)
+                {
+                    containsMaxAbs = 1;
+                    break;
+                }
+            }
+            
+
+            if (containsMaxAbs)
+            {
+                for (size_t i = 0; i < size_n; i++)
+                {
+                    newarr[i][new_col] = 0;
+                }
+                new_col++;
+            }
+        }
+        
+        printf("\nМаксимальный по модулю элемент: %d\n", maxAbs);
+        printf("Вставлено %d столбцов из нулей\n", count);
+        printf("Массив после вставки столбцов из нулей после столбцов с максимальным по модулю элементом:\n");
+        printArrays(newarr, size_n, new_size_m);
+        
+        freeArraysMemory(newarr, size_n);
+    }
 }
