@@ -140,9 +140,9 @@ int main(void)
     system("chcp 1251");
 
     printf("Введите размер массива: ");
-    size_t size = (size_t)getValid();
-    checkValueForN(size);
-
+    int size_int = getValid();
+    checkValueForN(size_int);  
+    size_t size = (size_t)size_int;  
     int* A = calloc(size, sizeof(int));
     check_pointer(A);
 
