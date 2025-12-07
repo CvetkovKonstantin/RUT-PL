@@ -1,7 +1,7 @@
-#include<stdio.h>
-#include<math.h>
-#include<stdlib.h>
-#include<float.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <float.h>
 
 /**
 * @brief Рассчитывает сумму n членов последовательности
@@ -31,6 +31,12 @@ double defValid();
 double getRecurent(const int k);
 
 /**
+ * @brief Проверяет корректность введённого значения n
+ * @param n - проверяемое значение
+ */
+void validateN(const int n);
+
+/**
 * @brief Точка входа в программу
 * @return Возвращает 0, если программа была выполнена корректно, иначе 1
 */
@@ -40,11 +46,7 @@ int main(void)
     
     printf("Введите целое число n: ");
     int n = (int)defValid();
-    if (n < 0)
-    {
-        printf("Error: n должно быть неотрицательным\n");
-        exit(1);
-    }
+    validateN(n);
     
     printf("Сумма первых %d членов последовательности = %.10lf\n\n", n, defSumm(n));
     
@@ -59,6 +61,15 @@ int main(void)
     printf("Сумма членов последовательности с точностью %.10lf = %.10lf\n", e, defSummE(e));
     
     return 0;
+}
+
+void validateN(const int n)
+{
+    if (n < 0)
+    {
+        printf("Error: n должно быть неотрицательным\n");
+        exit(1);
+    }
 }
 
 double defValid()
@@ -106,6 +117,5 @@ double defSummE(const double e)
 
 double getRecurent(const int k)
 {
-    
     return -1.0 / k;
 }
