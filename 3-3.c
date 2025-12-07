@@ -1,8 +1,8 @@
-#include<stdio.h>
-#include<math.h>
-#include<stdlib.h>
-#include<float.h>
-
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <float.h>
+#include <stdbool.h>
 
 /**
 * @brief Рассчитывает значение функции в точке
@@ -52,13 +52,12 @@ void checkEndStart(const double start, const double end);
 */
 void checkStep(const double step);
 
-
 /**
 * @brief Проверяет значение на условие
 * @param x - значение параметра x
-* @return Возвращает 0 или 1 в зависимости от истинности выражения
+* @return Возвращает true если x находится в области сходимости ряда, иначе false
 */
-_Bool checkX(const double x);
+bool checkX(const double x);
 
 /**
 * @brief Точка входа в программу
@@ -66,111 +65,105 @@ _Bool checkX(const double x);
 */
 int main(void)
 {
-	system("chcp 1251");
+    system("chcp 1251");
 
-	printf("Введите число e: ");
-	double e = defValid();
-	CheckValue(e);
+    printf("Введите число e: ");
+    double e = defValid();
+    CheckValue(e);
 
-	printf("Введите начальное значение: ");
-	double start = defValid();
-	printf("Введите конечное значение: ");
-	double end = defValid();
-	checkEndStart(start, end);
+    printf("Введите начальное значение: ");
+    double start = defValid();
+    printf("Введите конечное значение: ");
+    double end = defValid();
+    checkEndStart(start, end);
 
-	printf("Введите шаг: ");
-	double step = defValid();
-	checkStep(step);
+    printf("Введите шаг: ");
+    double step = defValid();
+    checkStep(step);
 
-	printf("%-10s%-25s%-10s\n", "x", "f(x)", "Summ(x)");
-	for (double x = start; x <= end + DBL_EPSILON; x += step)
-	{
-		if (checkX(x))
-		{
-			printf("%-10.2lf%-25.4lf%-10.4lf\n", x, function(x), defSummE(e,x));
-		}
-		else
-		{
-			printf("%-10.2lf%-25s%-10s\n", x, "Функция не определена", "Сумма ряда не определена");
-		}
+    printf("%-10s%-25s%-10s\n", "x", "f(x)", "Summ(x)");
+    for (double x = start; x <= end + DBL_EPSILON; x += step)
+    {
+        if (checkX(x))
+        {
+            printf("%-10.2lf%-25.4lf%-10.4lf\n", x, function(x), defSummE(e, x));
+        }
+        else
+        {
+            printf("%-10.2lf%-25s%-10s\n", x, "Функция не определена", "Сумма ряда не определена");
+        }
+    }
 
-	}
-
-	return 0;
+    return 0;
 }
 
 double function(const double x)
 {
-	return atan(x);
+    return atan(x);
 }
 
 double defValid()
 {
-	double valid = 0;
-	if (!scanf("%lf", &valid))
-	{
-		printf("Error\n");
-		exit(1);
-	}
+    double valid = 0;
+    if (!scanf("%lf", &valid))
+    {
+        printf("Error\n");
+        exit(1);
+    }
 
-	return valid;
+    return valid;
 }
 
 void CheckValue(const double input)
 {
-	if (!(input > 0))
-	{
-		printf("Error\n");
-		exit(1);
-	}
+    if (!(input > 0))
+    {
+        printf("Error: e должно быть положительным\n");
+        exit(1);
+    }
 }
-
 
 double defSummE(const double e, const double x)
 {
-	double current = x;
-	double result = 0;
-	int i = 0;
-	
-	// Исправляем: сначала проверяем, потом добавляем
-	while (fabs(current) > e)
-	{
-		result += current;
-		i++;
-		current *= getRecurent(i, x);
-	}
-	
-	return result;
+    double current = x;
+    double result = 0;
+    int i = 0;
+    
+    while (fabs(current) > e)
+    {
+        result += current;
+        i++;
+        current *= getRecurent(i, x);
+    }
+    
+    return result;
 }
 
 void checkEndStart(const double start, const double end)
 {
-	if (!(start < end))
-	{
-		printf("Error\n Значения не должны совпадать\n Значение начала не может быть больше значения конца\n");
-		exit(1);
-	}
+    if (!(start < end))
+    {
+        printf("Error\n Значения не должны совпадать\n Значение начала не может быть больше значения конца\n");
+        exit(1);
+    }
 }
 
 void checkStep(const double step)
 {
-	if (step <= DBL_EPSILON)
-	{
-		printf("Error\n Шаг должен быть больше 0\n");
-		exit(1);
-	}
+    if (step <= 0)
+    {
+        printf("Error\n Шаг должен быть больше 0\n");
+        exit(1);
+    }
 }
-
 
 double getRecurent(const int i, const double x)
 {
-
-	double n = (double)i;
-	return -x * x * (2.0 * n - 1.0) / (2.0 * n + 1.0);
+    double n = (double)i;
+    return -x * x * (2.0 * n - 1.0) / (2.0 * n + 1.0);
 }
 
-
-_Bool checkX(const double x)
+bool checkX(const double x)
 {
-	return 1;
+    return (fabs(x) <= 1.0);
 }
