@@ -52,7 +52,7 @@ int main(void)
     
     printf("Введите число e (точность): ");
     double e = defValid();
-    if (e <= 0)
+    if (e <= DBL_EPSILON)
     {
         printf("Error: e должно быть положительным\n");
         exit(1);
@@ -85,8 +85,6 @@ double defValid()
 
 double defSumm(const int n)
 {
-    if (n == 0) return 0.0;
-    
     double current = -1.0;
     double result = current;
     
@@ -102,13 +100,13 @@ double defSumm(const int n)
 double defSummE(const double e)
 {
     double current = -1.0; 
-    double result = 0.0;
+    double result = current;
     
     int k = 1;
     while (fabs(current) >= e)
     {
-        result += current;
         current *= getRecurent(k);
+        result += current;
         k++;
     }
     
