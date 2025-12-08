@@ -44,22 +44,6 @@ void defForTask2(const int* arr, const size_t size);
 void defForTask3(const int* arr, const size_t size);
 
 /**
-* @brief Находит минимальное значение массива
-* @param arr - массив
-* @param size - размер массива
-* @return Возвращает минимальный элемент массива
-*/
-int defMINN(const int* arr, const size_t size);
-
-/**
-* @brief Находит максимальное значение массива
-* @param arr - массив
-* @param size - размер массива
-* @return Возвращает максимальный элемент массива
-*/
-int defMAXX(const int* arr, const size_t size);
-
-/**
 * @brief Проверяет диапазон на корректность ввода
 * @param min - минимально возможный элемент массива
 * @param max - максимально возможный элемент массива
@@ -104,15 +88,6 @@ int* defcopyArr(const int* arr, const size_t size);
 * @param arr - массив
 */
 void check_pointer(const int* arr);
-
-/**
-* @brief Находит минимальный индекс числа в массиве, который равен заданному числу
-* @param arr - массив
-* @param size - размер массива
-* @param num - число
-* @return Индекс числа
-*/
-const size_t defidx(const int* arr, const size_t size, const int num);
 
 /**
 * @brief Находит номер последней пары соседних элементов с разными знаками
@@ -208,7 +183,7 @@ int main(void)
 int getValid()
 {
     int valid = 0;
-    if (!scanf_s("%d", &valid))
+    if (!scanf("%d", &valid))
     {
         fprintf(stderr, "Error");
         exit(1);
@@ -311,7 +286,7 @@ void defForTask2(const int* arr, const size_t size)
         }
     }
     
-    printf("\nКоличество элементов, значения которых положительны и не превосходят %d: %d\n", A, count);
+    printf("\nКоличество элементов, значений которых положительны и не превосходят %d: %d\n", A, count);
 }
 
 void defForTask3(const int* arr, const size_t size)
@@ -328,23 +303,8 @@ void defForTask3(const int* arr, const size_t size)
     {
         printf("\nНомер последней пары соседних элементов с разными знаками: %zu\n", result);
         printf("Элементы пары: arr[%zu] = %d, arr[%zu] = %d\n", 
-               result - 1, arr[result - 1], result, arr[result]);
+               result, arr[result], result + 1, arr[result + 1]); 
     }
-}
-
-int defMAXX(const int* arr, const size_t size)
-{
-    check_pointer(arr);
-
-    int maxx = arr[0];
-    for (size_t i = 0; i < size; i++)
-    {
-        if (arr[i] > maxx)
-        {
-            maxx = arr[i];
-        }
-    }
-    return maxx;
 }
 
 int* defcopyArr(const int* arr, const size_t size)
@@ -358,35 +318,6 @@ int* defcopyArr(const int* arr, const size_t size)
         copyArr[i] = arr[i];
     }
     return copyArr;
-}
-
-int defMINN(const int* arr, const size_t size)
-{
-    check_pointer(arr);
-
-    int minn = arr[0];
-    for (size_t i = 0; i < size; i++)
-    {
-        if (arr[i] < minn)
-        {
-            minn = arr[i];
-        }
-    }
-    return minn;
-}
-
-const size_t defidx(const int* arr, const size_t size, const int num)
-{
-    size_t temp = 0;
-    for (size_t i = 0; i < size; i++)
-    {
-        if (arr[i] == num)
-        {
-            temp = i;
-            break;
-        }
-    }
-    return temp;
 }
 
 void check_pointer(const int* arr)
@@ -406,7 +337,7 @@ size_t findLastDiffSignPair(const int* arr, const size_t size)
     {
         if ((arr[i] > 0 && arr[i + 1] < 0) || (arr[i] < 0 && arr[i + 1] > 0))
         {
-            lastPairIndex = i + 1; 
+            lastPairIndex = i;  
         }
     }
     
